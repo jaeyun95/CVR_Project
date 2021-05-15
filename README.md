@@ -13,7 +13,6 @@ CVR_Prediction
         └__init__.py
     └config.py
     └main.py
-    └savePrediction.py
     └requirements.txt
 └data
     └CriteoSearchData  #input data here 
