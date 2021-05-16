@@ -41,12 +41,12 @@ def test(model, test_loader, CUDA):
 ## load data
 if configure['TRAIN']:
     print("Train Data Loading ...")
-    train_data, train_label = preprocessing(data_range=configure['TRAIN_DATA'],augmentation=True)
+    train_data, train_label = preprocessing(data_range=configure['TRAIN_DATA'])
     train_dataset = CVR(train_data,train_label)
     train_loader = DataLoader(train_dataset, batch_size=configure['BATCH'], shuffle=True)
     print("Train Data Loading Success!!")
 print("Test Data Loading ...")
-test_data, test_label = preprocessing(data_range=configure['TEST_DATA'],augmentation=False)
+test_data, test_label = preprocessing(data_range=configure['TEST_DATA'])
 test_dataset = CVR(test_data,test_label)
 test_loader = DataLoader(test_dataset, batch_size=configure['BATCH'], shuffle=True)
 print("Test Data Loading Success!!")

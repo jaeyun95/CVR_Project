@@ -2,7 +2,6 @@ from config import configure
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler, OneHotEncoder
 import numpy as np
-from imblearn.over_sampling import SMOTE
 
 origin_columns = ["Sale","SalesAmountInEuro","Time_delay_for_conversion","click_timestamp","nb_clicks_1week","product_price",
            "product_age_group","device_type","audience_id","product_gender","product_brand","product_category1","product_category2",
@@ -14,7 +13,7 @@ string_data = ["product_age_group","device_type","audience_id","product_gender",
 one_hot_list = ["product_age_group","device_type","product_gender", "product_brand","product_category1","product_category2",
            "product_category3","product_category4","product_category5","product_category6","product_category7","product_country",]
 
-def preprocessing(data_range, augmentation=False):
+def preprocessing(data_range):
     data_frame = pd.read_csv(configure['DATA_PATH']+configure['DATA_FILE'], delimiter='\t', names=origin_columns, low_memory=False,
                              nrows=2000000)[data_range[0]:data_range[1]]
     # drop other label
@@ -49,13 +48,7 @@ def preprocessing(data_range, augmentation=False):
     data_frame[data_frame.columns] = minmax_scaler.fit_transform(data_frame[data_frame.columns])
 
     # data augmentation check
-    if augmentation:
-        print("Data Augmentation Start ...")
-        data, label = SMOTE(random_state=0).fit_resample(data_frame,label_frame)
-        print("Data Augmentation Success!!")
-        data = data.values
-        label = label.values
-    else:
-        data = data_frame.values
-        label = label_frame.values
+    data = data_frame.values
+    label = label_frame.values
+    
     return data, label
