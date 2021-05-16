@@ -1,10 +1,12 @@
 from util.data_preprocessing import preprocessing
 from util.dataset import CVR
+from util.optimizer import Adam
 from torch.utils.data import DataLoader
 from model.model import LogisticRegression
 from config import configure
 import torch.nn.functional as F
 import torch
+import matplotlib.pyplot as plt
 
 ## train function
 def train(model, train_loader, optimizer, CUDA=False):
@@ -12,13 +14,13 @@ def train(model, train_loader, optimizer, CUDA=False):
     for batch_index, (data, target) in enumerate(train_loader):
         if CUDA:
             data, target = data.cuda(), target.cuda()
+        optimizer.zero_grad()
         output = model(data)
         loss = F.binary_cross_entropy(output.squeeze(), target)
         loss.retain_grad()
         loss.backward()
-        with torch.no_grad():
-            for k, p in enumerate(model.parameters()):
-                update = optimizer.step(k, p, p.grad, loss)
+        optimizer.step()
+            
 
 ## test function
 def test(model, test_loader, CUDA):
@@ -44,7 +46,7 @@ if configure['TRAIN']:
     train_loader = DataLoader(train_dataset, batch_size=configure['BATCH'], shuffle=True)
     print("Train Data Loading Success!!")
 print("Test Data Loading ...")
-test_data, test_label = preprocessing(data_range=configure['TEST_DATA'],augmentation=True)
+test_data, test_label = preprocessing(data_range=configure['TEST_DATA'],augmentation=False)
 test_dataset = CVR(test_data,test_label)
 test_loader = DataLoader(test_dataset, batch_size=configure['BATCH'], shuffle=True)
 print("Test Data Loading Success!!")
@@ -53,7 +55,7 @@ print("Test Data Loading Success!!")
 model = LogisticRegression(22,1).cuda() if configure['CUDA'] else LogisticRegression(22,1)
 if configure['LOAD']:
     model.load_state_dict(torch.load(configure['MODEL_LOAD_PATH']+configure['MODEL_LOAD_FILE']))
-optimizer = torch.opti.Adam(model.parameters(), lr=0.0001)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
 ## train
 if configure['TRAIN']:
